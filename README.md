@@ -3,6 +3,8 @@
 This is a nice demo app that combines **Leaflet.js** for interactive maps with **Chart.js** for data visualization.  
 Click anywhere on the map, and you’ll get the **daily temperature (°C) at 2 meters above ground** for the last 7 days (and optionally the next 7 days) using the [Open-Meteo API](https://open-meteo.com/).
 
+![Weather Map Screenshot](images/Chart.png)
+
 ---
 
 ## Features
@@ -25,6 +27,9 @@ Click anywhere on the map, and you’ll get the **daily temperature (°C) at 2 m
   
 Example:
 https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&daily=temperature_2m_max,temperature_2m_min&timezone=auto&past_days=7&forecast_days=7
+
+##>>>>> YOU CAN FIND ALL POSSIBILITIES HERE ND THE REQUEST/API LINK WHEN YOU SCROLL DOWN AFTER THE FIRST CHART:
+![Weather Map Screenshot](images/API.png)
 
 The API returns JSON with arrays of dates and values with values respectively:
 ```json
