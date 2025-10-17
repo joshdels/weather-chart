@@ -64,8 +64,8 @@
 
       // Show popup with today's temperature
       if (showPopup) {
-        const todayMax = maxTemp[maxTemp.length - 1];
-        const todayMin = minTemp[minTemp.length - 1];
+        const todayMax = maxTemp[7];
+        const todayMin = minTemp[7];
         L.popup()
           .setLatLng([lat, lon])
           .setContent(`Today's Temp: ${todayMin}°C – ${todayMax}°C`)
