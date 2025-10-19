@@ -6,134 +6,25 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: sans-serif;
-    }
-    #map {
-      height: 100%;
-      width: 100%;
-    }
-    /* Chart overlay */
-    #chart-container {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 36%;
-      height: 40%;
-      background: #2b2b2b;
-      border: 1px solid #444;
-      border-radius: 8px;
-      padding: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-      z-index: 1000; /* above the map */
-      color: #eee;
-    }
-    #chart {
-      width: 100% !important;
-      height: 100% !important;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div id="map"></div>
+
   <div id="sidebar">
-    <div id="chart-container">
-      <canvas id="chart"></canvas>
+    <div id="header">
+      <h1>Open Weather</h1>
     </div>
+    <div id="daily-barChart">
+      <h3>Daily Weather of Berlin</h3>
+      <canvas id="chart1"></canvas>
+    </div>
+    <div id="chart-container">
+      <h3>Past 14-Days Weather</h3>
+      <canvas id="chart2"></canvas>
+    </div>
+
   </div>
-
-  <script>
-    // Init Leaflet map
-    const map = L.map('map').setView([52.52, 13.41], 5); // Berlin default
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-
-    let chartInstance;
-
-    async function loadWeather(lat, lon, showPopup = true) {
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&&daily=temperature_2m_max,temperature_2m_min,wind_speed_10m_max,precipitation_sum&past_days=7&timezone=auto`;
-      const res = await fetch(url);
-      const data = await res.json();
-
-      const labels = data.daily.time;
-      const maxTemp = data.daily.temperature_2m_max;
-      const minTemp = data.daily.temperature_2m_min;
-      const windSpeed = data.daily.wind_speed_10m_max;
-      const precipitation = data.daily.precipitation_sum;
-      const city = data.timezone.split("/")[1];
-
-      // Show popup with today's temperature
-      if (showPopup) {
-        const todayMax = maxTemp[7];
-        const todayMin = minTemp[7];
-        const todayWind = windSpeed[7];
-        const todayPrecip = precipitation[7];
-        L.popup()
-          .setLatLng([lat, lon])
-          .setContent(`
-            <b>${city}'s Today Weather</b> <br>Y
-            Temp: ${todayMin}°C – ${todayMax}°C <br>
-            Wind: ${todayWind} kph <br>
-            Precipitation: ${todayPrecip} mm
-          `)
-          .openOn(map);
-      }
-
-      // Destroy old chart if exists
-      if (chartInstance) chartInstance.destroy();
-
-      const ctx = document.getElementById("chart").getContext("2d");
-      chartInstance = new Chart(ctx, {
-        type: "line",
-        data: {
-          labels: labels, // e.g. ["2024-06-01", "2024-06-02", ...]
-          datasets: [
-            {
-              label: "Max Temp (°C)",
-              data: maxTemp, // e.g. [12, 15, 14, ...]
-              borderColor: "red",
-              backgroundColor: "rgba(255,165,0,0.2)",
-              fill: false
-            },
-            {
-              label: "Min Temp (°C)",
-              data: minTemp, // e.g. [5, 7, 6, ...]
-              borderColor: 'yellow',
-              backgroundColor: "rgba(173,216,230,0.2)",
-              fill: false
-            },
-            {
-              label: "Precipitation (°C)",
-              data: precipitation, // e.g. [5, 7, 6, ...]
-              borderColor: 'blue',
-              backgroundColor: "rgba(173,216,230,0.2)",
-              fill: false
-            },
-            {
-              label: "Wind Speed (°C)",
-              data: windSpeed, // e.g. [5, 7, 6, ...]
-              borderColor: "green",
-              backgroundColor: "rgba(173,216,230,0.2)",
-              fill: false
-            }
-          ]
-        }
-      });
-    }
-
-    // On map click → fetch weather + show popup
-    map.on("click", e => {
-      const { lat, lng } = e.latlng;
-      loadWeather(lat, lng, true);
-    });
-
-    // Load default location (Berlin, without popup)
-    loadWeather(52.52, 13.41);
-  </script>
+  <script src="chart.js"></script>
 </body>
 </html>
