@@ -40,8 +40,10 @@
 </head>
 <body>
   <div id="map"></div>
-  <div id="chart-container">
-    <canvas id="chart"></canvas>
+  <div id="sidebar">
+    <div id="chart-container">
+      <canvas id="chart"></canvas>
+    </div>
   </div>
 
   <script>
@@ -54,21 +56,31 @@
     let chartInstance;
 
     async function loadWeather(lat, lon, showPopup = true) {
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min&past_days=7&timezone=auto`;
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&&daily=temperature_2m_max,temperature_2m_min,wind_speed_10m_max,precipitation_sum&past_days=7&timezone=auto`;
       const res = await fetch(url);
       const data = await res.json();
 
       const labels = data.daily.time;
       const maxTemp = data.daily.temperature_2m_max;
       const minTemp = data.daily.temperature_2m_min;
+      const windSpeed = data.daily.wind_speed_10m_max;
+      const precipitation = data.daily.precipitation_sum;
+      const city = data.timezone.split("/")[1];
 
       // Show popup with today's temperature
       if (showPopup) {
         const todayMax = maxTemp[7];
         const todayMin = minTemp[7];
+        const todayWind = windSpeed[7];
+        const todayPrecip = precipitation[7];
         L.popup()
           .setLatLng([lat, lon])
-          .setContent(`Today's Temp: ${todayMin}°C – ${todayMax}°C`)
+          .setContent(`
+            <b>${city}'s Today Weather</b> <br>Y
+            Temp: ${todayMin}°C – ${todayMax}°C <br>
+            Wind: ${todayWind} kph <br>
+            Precipitation: ${todayPrecip} mm
+          `)
           .openOn(map);
       }
 
@@ -84,14 +96,28 @@
             {
               label: "Max Temp (°C)",
               data: maxTemp, // e.g. [12, 15, 14, ...]
-              borderColor: "#E55C40",
+              borderColor: "red",
               backgroundColor: "rgba(255,165,0,0.2)",
               fill: false
             },
             {
               label: "Min Temp (°C)",
               data: minTemp, // e.g. [5, 7, 6, ...]
-              borderColor: "#40A6E5",
+              borderColor: 'yellow',
+              backgroundColor: "rgba(173,216,230,0.2)",
+              fill: false
+            },
+            {
+              label: "Precipitation (°C)",
+              data: precipitation, // e.g. [5, 7, 6, ...]
+              borderColor: 'blue',
+              backgroundColor: "rgba(173,216,230,0.2)",
+              fill: false
+            },
+            {
+              label: "Wind Speed (°C)",
+              data: windSpeed, // e.g. [5, 7, 6, ...]
+              borderColor: "green",
               backgroundColor: "rgba(173,216,230,0.2)",
               fill: false
             }
